@@ -53,11 +53,13 @@ class SocialFeedProvider extends DataObject
 	 *
 	 * @return SS_List
 	 */
-	public function getFeed() {
-		$feed = $this->getFeedCache();
+	public function getFeed($customHandle = null) {
+		
+		$feed = $this->getFeedCache($customHandle);
+		$feed = false;
 		if (!$feed) {
-			$feed = $this->getFeedUncached();
-			$this->setFeedCache($feed);
+			$feed = $this->getFeedUncached($customHandle);
+			$this->setFeedCache($feed,$customHandle);
 			if (class_exists('AbstractQueuedJob')) {
 				singleton('SocialFeedCacheQueuedJob')->createJob($this);
 			}
@@ -90,7 +92,7 @@ class SocialFeedProvider extends DataObject
 	 * Retrieve the providers feed without checking the cache first.
 	 * @throws Exception
 	 */
-	public function getFeedUncached() {
+	public function getFeedUncached($customHandle = null) {
 		throw new Exception($this->class.' missing implementation for '.__FUNCTION__);
 	}
 
@@ -100,9 +102,13 @@ class SocialFeedProvider extends DataObject
 	 *
 	 * @return array
 	 */
-	public function getFeedCache() {
+	public function getFeedCache($customHandle = null) {
 		$cache = $this->getCacheFactory();
-		$feedStore = $cache->load($this->ID);
+		$cacheID = $this->ID;
+		if ($customHandle) {
+			$cacheID .= $customHandle;
+		}
+		$feedStore = $cache->load($cacheID);
 		if (!$feedStore) {
 			return false;
 		}
@@ -130,10 +136,14 @@ class SocialFeedProvider extends DataObject
 	/**
 	 * Set the cache.
 	 */
-	public function setFeedCache(array $feed) {
+	public function setFeedCache(array $feed,$customHandle = null) {
 		$cache = $this->getCacheFactory();
 		$feedStore = serialize($feed);
-		$result = $cache->save($feedStore, $this->ID);
+		$cacheID = $this->ID;
+		if ($customHandle) {
+			$cacheID .= $customHandle;
+		}
+		$result = $cache->save($feedStore, $cacheID);
 		return $result;
 	}
 
