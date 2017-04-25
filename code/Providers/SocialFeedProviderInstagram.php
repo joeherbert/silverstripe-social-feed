@@ -81,15 +81,21 @@ class SocialFeedProviderInstagram extends SocialFeedProvider implements SocialFe
 	 *
 	 * @return mixed
 	 */
-	public function getFeedUncached()
+	public function getFeedUncached($customHandle = null)
 	{
 		$provider = new Instagram([
 			'clientId' => $this->ClientID,
 			'clientSecret' => $this->ClientSecret,
 			'redirectUri' => $this->getRedirectUri() . '?provider_id=' . $this->ID
 		]);
-
-		$request = $provider->getRequest('GET', 'https://api.instagram.com/v1/users/self/media/recent/?access_token=' . $this->AccessToken);
+		if ($customHandle) {
+			$request = $provider->getRequest('GET', 'https://www.instagram.com/'.$customHandle.'/media/');
+		}
+		else
+		{
+			$request = $provider->getRequest('GET', 'https://api.instagram.com/v1/users/self/media/recent/?access_token=' . $this->AccessToken);
+		}
+		
 		try {
 			$result = $provider->getResponse($request);
 		} catch (Exception $e) {
@@ -103,7 +109,8 @@ class SocialFeedProviderInstagram extends SocialFeedProvider implements SocialFe
 			user_error($e->getMessage() . $errorHelpMessage, E_USER_WARNING);
 			$result['data'] = array();
 		}
-		return $result['data'];
+
+		return $result['items'];
 	}
 
 	/** 
