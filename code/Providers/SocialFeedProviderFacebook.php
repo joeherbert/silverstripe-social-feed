@@ -65,7 +65,7 @@ class SocialFeedProviderFacebook extends SocialFeedProvider implements SocialFee
 		return $this->type;
 	}
 
-	public function getFeedUncached()
+	public function getFeedUncached($customHandle = null)
 	{
 		$provider = new Facebook([
 			'clientId' => $this->FacebookAppID,
@@ -73,6 +73,10 @@ class SocialFeedProviderFacebook extends SocialFeedProvider implements SocialFee
 			// https://github.com/thephpleague/oauth2-facebook#graph-api-version
 			'graphApiVersion' => 'v2.6'
 		]);
+
+		if ($customHandle) {
+			$this->FacebookPageID = $customHandle;
+		}
 
 		// For an App Access Token we can just use our App ID and App Secret pipped together
 		// https://developers.facebook.com/docs/facebook-login/access-tokens#apptokens
