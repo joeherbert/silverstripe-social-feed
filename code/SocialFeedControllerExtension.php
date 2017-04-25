@@ -12,22 +12,22 @@ class SocialFeedControllerExtension extends DataExtension
 		}
 	}
 
-	public function SocialFeed()
+	public function SocialFeed($customHandleInstagram = null,$customHandleFacebook = null,$customHandleTwitter = null)
 	{
-		$combinedData = $this->getProviderFeed(SocialFeedProviderInstagram::get()->filter('Enabled', 1));
-		$combinedData = $this->getProviderFeed(SocialFeedProviderFacebook::get()->filter('Enabled', 1), $combinedData);
-		$combinedData = $this->getProviderFeed(SocialFeedProviderTwitter::get()->filter('Enabled', 1), $combinedData);
+		$combinedData = $this->getProviderFeed(SocialFeedProviderInstagram::get()->filter('Enabled', 1),array(), $customHandleInstagram);
+		$combinedData = $this->getProviderFeed(SocialFeedProviderFacebook::get()->filter('Enabled', 1), $combinedData, $customHandleFacebook);
+		$combinedData = $this->getProviderFeed(SocialFeedProviderTwitter::get()->filter('Enabled', 1), $combinedData, $customHandleTwitter);
 
 		$result = new ArrayList($combinedData);
 		$result = $result->sort('Created', 'DESC');
 		return $result;
 	}
 
-	private function getProviderFeed($providers, $data = array())
+	private function getProviderFeed($providers, $data = array(), $customHandle = null)
 	{
 		foreach ($providers as $prov) {
 			if (is_subclass_of($prov, 'SocialFeedProvider')) {
-				if ($feed = $prov->getFeed()) {
+				if ($feed = $prov->getFeed($customHandle)) {
 					foreach ($feed->toArray() as $post) {
 						$data[] = $post;
 					}
