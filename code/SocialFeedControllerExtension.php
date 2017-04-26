@@ -14,10 +14,16 @@ class SocialFeedControllerExtension extends DataExtension
 
 	public function SocialFeed($customHandleInstagram = null,$customHandleFacebook = null,$customHandleTwitter = null)
 	{
-		$combinedData = $this->getProviderFeed(SocialFeedProviderInstagram::get()->filter('Enabled', 1),array(), $customHandleInstagram);
-		$combinedData = $this->getProviderFeed(SocialFeedProviderFacebook::get()->filter('Enabled', 1), $combinedData, $customHandleFacebook);
-		$combinedData = $this->getProviderFeed(SocialFeedProviderTwitter::get()->filter('Enabled', 1), $combinedData, $customHandleTwitter);
-
+		$combinedData = array();
+		if ($customHandleInstagram) {
+			$combinedData = $this->getProviderFeed(SocialFeedProviderInstagram::get()->filter('Enabled', 1), $combinedData, $customHandleInstagram);
+		}
+		if ($customHandleFacebook) {
+			$combinedData = $this->getProviderFeed(SocialFeedProviderFacebook::get()->filter('Enabled', 1), $combinedData, $customHandleFacebook);
+		}
+		if ($customHandleTwitter) {
+			$combinedData = $this->getProviderFeed(SocialFeedProviderTwitter::get()->filter('Enabled', 1), $combinedData, $customHandleTwitter);
+		}
 		$result = new ArrayList($combinedData);
 		$result = $result->sort('Created', 'DESC');
 		return $result;
