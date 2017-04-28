@@ -14,37 +14,24 @@ class SocialFeedControllerExtension extends DataExtension
 
 	public function SocialFeed($customHandleInstagram = null,$customHandleFacebook = null,$customHandleTwitter = null)
 	{
+		
 		$combinedData = array();
 		if ($customHandleInstagram) {
-			if(preg_match("/\/(\d+)$/",$customHandleInstagram,$matches)) {
-			  $handle=$matches[1];
-			}
-			else
-			{
-			  $handle=$customHandleInstagram;
-			}
+			$link_array = explode('/',$customHandleInstagram);
+    		$handle = end($link_array);
 			$combinedData = $this->getProviderFeed(SocialFeedProviderInstagram::get()->filter('Enabled', 1), $combinedData, $handle);
 		}
 		if ($customHandleFacebook) {
-			if(preg_match("/\/(\d+)$/",$customHandleFacebook,$matches)) {
-			  $handle=$matches[1];
-			}
-			else
-			{
-			  $handle=$customHandleFacebook;
-			}
+			$link_array = explode('/',$customHandleFacebook);
+    		$handle = end($link_array);
 			$combinedData = $this->getProviderFeed(SocialFeedProviderFacebook::get()->filter('Enabled', 1), $combinedData, $handle);
 		}
 		if ($customHandleTwitter) {
-			if(preg_match("/\/(\d+)$/",$customHandleTwitter,$matches)) {
-			  $handle=$matches[1];
-			}
-			else
-			{
-			  $handle=$customHandleTwitter;
-			}
+			$link_array = explode('/',$customHandleTwitter);
+    		$handle = end($link_array);
 			$combinedData = $this->getProviderFeed(SocialFeedProviderTwitter::get()->filter('Enabled', 1), $combinedData, $handle);
 		}
+		
 		$result = new ArrayList($combinedData);
 		$result = $result->sort('Created', 'DESC');
 		return $result;
