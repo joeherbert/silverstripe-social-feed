@@ -12,7 +12,7 @@ class SocialFeedControllerExtension extends DataExtension
 		}
 	}
 
-	public function SocialFeed($customHandleInstagram = null,$customHandleFacebook = null,$customHandleTwitter = null)
+	public function SocialFeed($customHandleInstagram = null,$customHandleFacebook = null,$customHandleTwitter = null, $chunk = false)
 	{
 		
 		$combinedData = array();
@@ -34,6 +34,18 @@ class SocialFeedControllerExtension extends DataExtension
 		
 		$result = new ArrayList($combinedData);
 		$result = $result->sort('Created', 'DESC');
+		if ($chunk) {
+			$chunkedData = array_chunk($result->toArray(),$chunk);
+			foreach ($chunkedData AS $k => $v) {
+				$chunkedData[$k] = array();
+				$chunkedData[$k]['Items'] = new ArrayList($v);
+			}
+			/*echo "<pre>";
+			print_r($chunkedData);
+			die();*/
+			$result = new ArrayList($chunkedData);
+		}
+		
 		return $result;
 	}
 
