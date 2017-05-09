@@ -106,7 +106,7 @@ class SocialFeedProvider extends DataObject
 		$cache = $this->getCacheFactory();
 		$cacheID = $this->ID;
 		if ($customHandle) {
-			$cacheID .= $customHandle;
+			$cacheID .= preg_replace("/[^a-zA-Z0-9]+/", "", $customHandle);
 		}
 		$feedStore = $cache->load($cacheID);
 		if (!$feedStore) {
