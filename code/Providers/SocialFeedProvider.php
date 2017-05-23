@@ -17,7 +17,7 @@ class SocialFeedProvider extends DataObject
 	 *
 	 * @var int
 	 */
-	private static $default_cache_lifetime = 900; // 15 minutes (900 seconds)
+	private static $default_cache_lifetime = 9000; // 15 minutes (900 seconds)
 
 	/**
 	 * @return FieldList
@@ -56,16 +56,10 @@ class SocialFeedProvider extends DataObject
 	public function getFeed($customHandle = null) {
 		
 		$feed = $this->getFeedCache($customHandle);
-		$feed = false;
+		//$feed = false;
 		if (!$feed) {
-			try {
-				$feed = $this->getFeedUncached($customHandle);
-			} catch (Exception $e) {
-				$feed = false;	
-			}
-			if ($feed) {
-				$this->setFeedCache($feed,$customHandle);
-			}
+			$feed = $this->getFeedUncached($customHandle);
+			$this->setFeedCache($feed,$customHandle);
 			if (class_exists('AbstractQueuedJob')) {
 				singleton('SocialFeedCacheQueuedJob')->createJob($this);
 			}
@@ -112,7 +106,7 @@ class SocialFeedProvider extends DataObject
 		$cache = $this->getCacheFactory();
 		$cacheID = $this->ID;
 		if ($customHandle) {
-			$cacheID .= preg_replace("/[^a-zA-Z0-9]+/", "", $customHandle);
+			$cacheID .= $customHandle;
 		}
 		$feedStore = $cache->load($cacheID);
 		if (!$feedStore) {
