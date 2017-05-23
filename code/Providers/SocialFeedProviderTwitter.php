@@ -44,13 +44,14 @@ class SocialFeedProviderTwitter extends SocialFeedProvider implements SocialFeed
 		// NOTE: Twitter doesn't implement OAuth 2 so we can't use https://github.com/thephpleague/oauth2-client
 		$connection = new TwitterOAuth($this->ConsumerKey, $this->ConsumerSecret, $this->AccessToken, $this->AccessTokenSecret);
 		if ($customHandle) {
-			$result = $connection->get('statuses/user_timeline', ['screen_name' => $customHandle, 'count' => 25, 'exclude_replies' => true]);
+			$result = $connection->get('statuses/user_timeline', ['screen_name' => $customHandle, 'count' => 25, 'exclude_replies' => true,'include_rts' => false,'tweet_mode' => 'extended']);
+			
 		}
 		else
 		{
-			$result = $connection->get('statuses/user_timeline', ['count' => 25, 'exclude_replies' => true]);
+			$result = $connection->get('statuses/user_timeline', ['count' => 25, 'exclude_replies' => true,'include_rts' => false,'tweet_mode' => 'extended']);
 		}
-		
+
 		if (isset($result->error)) {
 			user_error($result->error, E_USER_WARNING);
 		}
@@ -61,7 +62,13 @@ class SocialFeedProviderTwitter extends SocialFeedProvider implements SocialFeed
 	 * @return HTMLText
 	 */
 	public function getPostContent($post) {
-		$text = isset($post->text) ? $post->text : '';
+		if (isset($post->text)) {
+			$text = isset($post->text) ? $post->text : '';
+		} elseif ((isset($post->truncated)) AND ($post->truncated)) {
+			$text = isset($post->truncated) ? $post->truncated : '';
+		} else  {
+			$text = isset($post->full_text) ? $post->full_text : '';
+		}
 		$text = preg_replace('/(https?:\/\/[a-z0-9\.\/]+)/i', '<a href="$1" target="_blank">$1</a>', $text); 
 
 		$result = DBField::create_field('HTMLText', $text);
