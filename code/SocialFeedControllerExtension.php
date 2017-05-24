@@ -20,21 +20,21 @@ class SocialFeedControllerExtension extends DataExtension
 			$link_array = explode('/',$customHandleInstagram);
     		$handle = end($link_array);
     		$query_array = explode('?',$handle);
-    		$handle = $handle = preg_replace("/[^A-Za-z0-9 ]/", '',$query_array[0]);
+    		$handle = $handle = preg_replace("/[^A-Za-z0-9]/", '',$query_array[0]);
 			$combinedData = $this->getProviderFeed(SocialFeedProviderInstagram::get()->filter('Enabled', 1), $combinedData, $handle);
 		}
 		if ($customHandleFacebook) {
 			$link_array = explode('/',$customHandleFacebook);
     		$handle = end($link_array);
     		$query_array = explode('?',$handle);
-    		$handle = $handle = preg_replace("/[^A-Za-z0-9 ]/", '',$query_array[0]);
+    		$handle = $handle = preg_replace("/[^A-Za-z0-9]/", '',$query_array[0]);
 			$combinedData = $this->getProviderFeed(SocialFeedProviderFacebook::get()->filter('Enabled', 1), $combinedData, $handle);
 		}
 		if ($customHandleTwitter) {
 			$link_array = explode('/',$customHandleTwitter);
     		$handle = end($link_array);
     		$query_array = explode('?',$handle);
-    		$handle = $handle = preg_replace("/[^A-Za-z0-9 ]/", '',$query_array[0]);
+    		$handle = $handle = preg_replace("/[^A-Za-z0-9]/", '',$query_array[0]);
 			$combinedData = $this->getProviderFeed(SocialFeedProviderTwitter::get()->filter('Enabled', 1), $combinedData, $handle);
 		}
 		
